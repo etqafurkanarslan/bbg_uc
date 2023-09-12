@@ -1,0 +1,54 @@
+li button.list-group-item {
+    border-radius: 0 0 10px 10px;
+    /* Sadece alt köşeleri yuvarlat */
+    background-color: #007bff;
+    /* Varsayılan mavi renk */
+    color: #fff;
+    /* Metin rengi beyaz yapabilirsiniz */
+    border: none;
+    /* Kenarlığı kaldırabilirsiniz */
+}
+
+/* lg2 */
+#lg2 {
+    border-radius: 0%;
+}
+
+.list-group-item-action {
+    border-bottom-left-radius: 5px;
+
+}
+
+li {
+    list-style-type: none;
+}
+
+.form-control {
+    border-bottom-left-radius: 0%;
+    border-bottom-right-radius: 0%;
+}
+
+.container {
+    border-radius: 25px;
+    margin-top: 10%;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.7)
+}
+
+/* background */
+body {
+    background-image: url("bbg.jpeg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    /*font-family: 'Roboto', sans-serif;*/
+
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif
+}

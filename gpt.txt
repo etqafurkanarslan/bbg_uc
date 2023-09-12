@@ -1,0 +1,154 @@
+Bu Backend kodum :
+from fastapi import FastAPI
+from fastapi.templating import Jinja2Templates
+from fastapi import Request
+from fastapi.staticfiles import StaticFiles
+from fastapi import  UploadFile, HTTPException
+from typing import List
+
+
+
+# templates klasörünü tanımlıyoruz.
+templates = Jinja2Templates(directory="templates")
+
+
+
+
+
+app = FastAPI()
+
+#static klasörünü tanımlıyoruz.
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+@app.get("/")
+async def root(request: Request):
+    # index.html i döndürüyoruz.
+    return templates.TemplateResponse("index.html", {"request": request })
+
+def add_file_to_local_storage(file: UploadFile):
+    with open("files/"+file.filename, "wb") as f:
+        f.write(file.file.read())
+    return file
+
+
+
+@app.post("/uploadfiles")
+async def create_upload_files(files: List[UploadFile]):
+    return {"filenames": [file.filename for file in files]}
+
+
+Bu da frontend kodum:
+
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BBGrup Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', path='bbg.css') }}">
+
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>BBGrup Portal Yayına hazırlanıyor</h1>
+                <h2>En iyi deneyim için çalışıyoruz...</h2>
+                <!-- bir satır boşluk -->
+                <br>
+                <h3>Bu süreçte dosyalarınızı iletmek için aşağıdaki formu kullanabilirsiniz</h3>
+            </div>
+        </div>
+
+
+        <ul class="list-group">
+            <li>
+                <label for="formFileMultiple" class="form-label"></label>
+                <input class="form-control" type="file" id="formFileMultiple" multiple>
+            </li>
+            <ul class="list-group" id="lg2">
+                <li class="list-group-item">Dosyalar Burada Görüntülenir</li>
+            </ul>
+            <li>
+                <button type="button" class="list-group-item list-group-item-action" id="uploadButton">Yükle</button>
+            </li>
+
+        </ul>
+
+
+        <br>
+    </div>
+
+
+
+</body>
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const formFileInput = document.getElementById("formFileMultiple");
+        const uploadButton = document.getElementById("uploadButton");
+        const fileList = document.getElementById("lg2");
+
+        formFileInput.addEventListener("change", function () {
+            // Kullanıcı dosya seçimini değiştirdiğinde bu olay tetiklenir
+            fileList.innerHTML = ""; // Önceki dosya adlarını temizle
+
+            // Seçilen dosyaların adlarını listeye ekleyin
+            console.log(formFileInput.files);
+            for (let i = 0; i < formFileInput.files.length; i++) {
+                const fileName = formFileInput.files[i].name;
+                // create a list group item
+                const listItem = document.createElement("li");
+                listItem.className = "list-group-item";
+                listItem.textContent = fileName;
+                fileList.appendChild(listItem);
+            }
+        });
+
+        uploadButton.addEventListener("click", function () {
+            // dosyaları yüklemek için bir multipart/form-data formu oluşturun
+            const formData = new FormData();
+            for (let i = 0; i < formFileInput.files.length; i++) {
+                formData.append("files[]", formFileInput.files[i]);
+            }
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'http://127.0.0.1:8000/uploadfiles');
+
+            xhr.send(formData);
+
+
+
+        });
+    });</script>
+
+</html>
+
+
+
+Dosya yüklemeye çalıştığımda şu hatayı alıyorum:
+422 Unprocessable Entity
+
+response: {
+    "detail": [
+        {
+            "type": "missing",
+            "loc": [
+                "body",
+                "files"
+            ],
+            "msg": "Field required",
+            "input": null,
+            "url": "https://errors.pydantic.dev/2.3/v/missing"
+        }
+    ]
+}
+
+
+
+bunun çözümü nedir ? 
